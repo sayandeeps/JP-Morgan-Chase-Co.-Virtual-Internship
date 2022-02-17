@@ -1,8 +1,18 @@
 Task 1:
 Step 1: First Install git : link given in the description 
 Step 2: open cmd and paste this command : git clone https://github.com/insidesherpa/JPMC-tech-task-1-py3.git
-Step 3:
-Code changes in client3 :
+Step 3: Download Python and install it : link given in the description
+step 4: Open terminal and run this command to download the dateutil: pip install python-dateutil
+step 5: again open terminal and type cd <the path where you downloaded the git files : nomally it gets downloadded in c/user/<your name>/ : pleases do check it>
+step 6: now open terminal with administrative permision (shown in video)
+step 7: in the administrative cmd type : python server3.py          if error is shown then type: python3 server3.py
+step 8: open another normal cmd and type : python client3.py        if error is shown then type: python3 client3.py
+steo 9: inorder to make changes in code download vs code (shown in video)
+step 10: open client3 from the file you downloaded from git
+step 11: select all and then backspace and copy paste the below code 
+
+Code changes in client3 copy and paste it all :
+
 ################################################################################
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
@@ -67,9 +77,13 @@ if __name__ == "__main__":
  
         print ("Ratio %s" % (getRatio(prices['ABC'],prices['DEF'])))
         
+################################################################################        
         
-        
-  
+ Bonus Task: 
+ 
+step 1: open client_test.py 
+step 2: Select all and backspace and paste the full below code 
+
 Code Changes in unit Test:
 
 import unittest
@@ -101,4 +115,16 @@ class ClientTest(unittest.TestCase):
  
 if __name__ == '__main__':
     unittest.main()
+    
+-------------------------------------------------------------------------------------------------------------    
+Create A Patch file :
+Step 1: Open cmd and change dir by cd <path where you downloaded the git files:
+step 2: write the below code
+
+git add -A
+git config user.email "<your_email_address>"
+git config user.name "<your_name>"
+git commit -m "Create Patch File"
+git format-patch -1 HEAD
+
 
