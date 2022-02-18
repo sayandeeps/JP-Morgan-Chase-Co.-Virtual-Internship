@@ -1,0 +1,200 @@
+Setting up the enviroment:
+Step 1: In task 1 we already installed git so open cmd and run this : git clone https://github.com/insidesherpa/JPMC-tech-task-2-PY3.git
+Step 2: in cmd change directory to where you downloaded the git files: cd <path of your task 2 files>
+Step 3: After changing the directory in cmd run the command : python datafeed/server3.py    if error is shown then run this : python3 datafeed/server3.py
+Step 4: Download node as shown in the video.
+Step 5: run npm -install npm --global and then if you want you can download the latest version of the npm command will be given on screen as shown on video.
+Step 6: download the Visual studio IDE Build tools and install Visual C++ Build Environment as shown in the video
+Step 7: after insalling run this command in command promt : npm config set msvs_version 2017
+Step 8: Open a new cmd and change directory to the path where you downloaded the path 2 files.: cd cd <path of your task 2 files>
+Step 9: Run the command npm install and then npm start.
+Note: If you get error solution is given in the video.
+
+Code changes.
+
+Correct code of App.tsk (Backspace the previous code and paste all)  ----->
+
+import React, { Component } from 'react';
+import DataStreamer, { ServerRespond } from './DataStreamer';
+import Graph from './Graph';
+import './App.css';
+ 
+/**
+ * State declaration for <App />
+ */
+interface IState {
+  data: ServerRespond[],
+  showGraph: boolean,
+}
+ 
+/**
+ * The parent element of the react app.
+ * It renders title, button and Graph react element.
+ */
+class App extends Component<{}, IState> {
+  constructor(props: {}) {
+    super(props);
+ 
+    this.state = {
+      // data saves the server responds.
+      // We use this state to parse data down to the child element (Graph) as element property
+      data: [],
+      showGraph: false,
+    };
+  }
+ 
+  /**
+   * Render Graph react component with state.data parse as property data
+   */
+  renderGraph() {
+    if (this.state.showGraph){
+      return (<Graph data={this.state.data}/>)
+    }
+  }
+ 
+  /**
+   * Get new data from server and update the state with the new data
+   */
+  getDataFromServer() {
+    let x=0;
+    const interval =setInterval(() => {
+    DataStreamer.getData((serverResponds: ServerRespond[]) => {
+      // Update the state by creating a new array of data that consists of
+      // Previous data in the state and the new data from server
+      this.setState({
+        data: serverResponds,
+        showGraph: true,
+ 
+    });
+  });
+  x++;
+  if (x>1000){
+    clearInterval(interval);
+  }
+},100);
+  }
+ 
+  /**
+   * Render the App react component
+   */
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          Bank & Merge Co Task 2
+        </header>
+        <div className="App-content">
+          <button className="btn btn-primary Stream-button"
+            // when button is click, our react app tries to request
+            // new data from the server.
+            // As part of your task, update the getDataFromServer() function
+            // to keep requesting the data every 100ms until the app is closed
+            // or the server does not return anymore data.
+            onClick={() => {this.getDataFromServer()}}>
+            Start Streaming Data
+          </button>
+          <div className="Graph">
+            {this.renderGraph()}
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+ 
+export default App;
+
+
+Correct code of Graph.tsk (Backspace the previous code and paste all)  ----->
+
+import React, { Component } from 'react';
+import { Table } from '@jpmorganchase/perspective';
+import { ServerRespond } from './DataStreamer';
+import './Graph.css';
+ 
+/**
+ * Props declaration for <Graph />
+ */
+interface IProps {
+  data: ServerRespond[],
+}
+ 
+/**
+ * Perspective library adds load to HTMLElement prototype.
+ * This interface acts as a wrapper for Typescript compiler.
+ */
+interface PerspectiveViewerElement extends HTMLElement {
+  load: (table: Table) => void,
+}
+ 
+/**
+ * React component that renders Perspective based on data
+ * parsed from its parent through data property.
+ */
+class Graph extends Component<IProps, {}> {
+  // Perspective table
+  table: Table | undefined;
+ 
+  render() {
+    return React.createElement('perspective-viewer');
+  }
+ 
+  componentDidMount() {
+    // Get element to attach the table from the DOM.
+    const elem= document.getElementsByTagName('perspective-viewer')[0] as unknown as PerspectiveViewerElement;
+    const schema = {
+      stock: 'string',
+      top_ask_price: 'float',
+      top_bid_price: 'float',
+      timestamp: 'date',
+    };
+ 
+    if (window.perspective && window.perspective.worker()) {
+      this.table = window.perspective.worker().table(schema);
+    }
+    if (this.table) {
+      // Load the `table` in the `<perspective-viewer>` DOM reference.
+ 
+      // Add more Perspective configurations here.
+      elem.load(this.table);
+      elem.setAttribute('view','y_line');
+      elem.setAttribute('column-pivots','["stock"]');
+      elem.setAttribute('row-pivots','["timestamp"]');
+      elem.setAttribute('columns','["top_ask_price"]');
+      elem.setAttribute('aggregates','{"stock":"distinct count","top_ask_price":"avg","top_bid_price":"avg","timestamp":"distinct count"}');
+    }
+  }
+ 
+  componentDidUpdate() {
+    // Everytime the data props is updated, insert the data into Perspective table
+    if (this.table) {
+      // As part of the task, you need to fix the way we update the data props to
+      // avoid inserting duplicated entries into Perspective table again.
+      this.table.update(this.props.data.map((el: any) => {
+        // Format the data from ServerRespond to the schema
+        return {
+          stock: el.stock,
+          top_ask_price: el.top_ask && el.top_ask.price || 0,
+          top_bid_price: el.top_bid && el.top_bid.price || 0,
+          timestamp: el.timestamp,
+        };
+      }));
+    }
+  }
+}
+ 
+export default Graph;
+
+
+
+Code to make the patch file:
+
+
+git add -A 
+git config user.email "your email" 
+git config user.name "your name" 
+git commit -m “Create Patch File” 
+git format-patch -1 HEAD
+
+
+
